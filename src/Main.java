@@ -38,8 +38,13 @@ public class Main {
 
         boolean fl = true;
         String ans = "";
-        while (fl) {
-            if (ans.equals("-10") || ans.equals("выйти") || ans.equals("-10") || ans.equals("назад")) {
+        boolean trade = false;
+        while (fl || trade) {
+            if (trade) {
+                trade = false;
+                fl = true;
+            }
+            if (ans.equals("-10") || ans.equals("выйти") || ans.equals("-1") || ans.equals("назад")) {
                 System.out.println("До свидания!\nСессия завершена. На вашем счету:\n" +
                         "1. " + rub + " = " + capitalRUB + "\n" +
                         "2. " + usd + " = " + capitalUSD + "\n" +
@@ -66,7 +71,7 @@ public class Main {
             ans = "";
 
             String y_n = "";
-            while (true) {
+            while (fl) {
                 if (y_n.equals("-10") || y_n.equals("выйти") || !fl) {
                     System.out.println("До свидания!\n" +
                             "Сессия завершена. На вашем счету:\n" +
@@ -97,7 +102,7 @@ public class Main {
                 y_n = "";
 
                 String cnt = "";
-                while (true) {
+                while (fl) {
                     if (cnt.equals("-10") || cnt.equals("выйти")) {
                         System.out.println("До свидания!\n" +
                                 "Сессия завершена. На вашем счету:\n" +
@@ -129,9 +134,10 @@ public class Main {
                     } catch (Exception e) {
                         continue;
                     }
+                    cnt = "";
 
                     Random rn = new Random();
-                    int minimum = -50, maximum = 50;
+                    int minimum = 0, maximum = 50;
                     double randNum = (double) (rn.nextInt(maximum - minimum + 1) + minimum)/10;
                     boolean finish = false;
                     if (exchange == 1) {
@@ -142,18 +148,14 @@ public class Main {
                                 startRUB -= count*courseRubUsd;
                                 capitalRUB += count*courseRubUsd;
                                 finish = true;
-                            } else {
-
                             }
                         } else if (num_course == 2) {
                             if (capitalEUR >= count && startRUB >= count*courseRubEur) {
                                 capitalEUR -= count;
                                 startEUR += count;
                                 startRUB -= count*courseRubEur;
-                                capitalRUB += count*courseRubUsd;
+                                capitalRUB += count*courseRubEur;
                                 finish = true;
-                            } else {
-
                             }
                         } else if (num_course == 3) {
                             if (capitalEUR >= count && startUSD >= count*courseUsdEur) {
@@ -162,8 +164,6 @@ public class Main {
                                 startUSD -= count*courseUsdEur;
                                 capitalUSD += count*courseUsdEur;
                                 finish = true;
-                            } else {
-
                             }
                         } else if (num_course == 4) {
                             if (capitalUSDT >= count && startUSD >= count*courseUsdUsdt) {
@@ -172,8 +172,6 @@ public class Main {
                                 startUSD -= count*courseUsdUsdt;
                                 capitalUSD += count*courseUsdUsdt;
                                 finish = true;
-                            } else {
-
                             }
                         } else {
                             if (capitalBTC >= count && startUSD >= count*courseUsdBtc) {
@@ -182,8 +180,6 @@ public class Main {
                                 startUSD -= count*courseUsdBtc;
                                 capitalUSD += count*courseUsdBtc;
                                 finish = true;
-                            } else {
-
                             }
                         }
                     } else {
@@ -193,6 +189,7 @@ public class Main {
                                 capitalUSD += count;
                                 capitalRUB -= count*courseRubUsd;
                                 startRUB += count*courseRubUsd;
+                                finish = true;
                             }
                         } else if (num_course == 2) {
                             if (startEUR >= count && capitalRUB >= count*courseRubEur) {
@@ -200,6 +197,7 @@ public class Main {
                                 capitalEUR += count;
                                 capitalRUB -= count*courseRubEur;
                                 startRUB += count*courseRubEur;
+                                finish = true;
                             }
                         } else if (num_course == 3) {
                             if (startEUR >= count && capitalUSD >= count*courseUsdEur) {
@@ -207,6 +205,7 @@ public class Main {
                                 capitalEUR += count;
                                 capitalUSD -= count*courseUsdEur;
                                 startUSD += count*courseUsdEur;
+                                finish = true;
                             }
                         } else if (num_course == 4) {
                             if (startUSDT >= count && capitalUSD >= count*courseUsdUsdt) {
@@ -214,15 +213,44 @@ public class Main {
                                 capitalUSDT += count;
                                 capitalUSD -= count*courseUsdUsdt;
                                 startUSD += count*courseUsdUsdt;
+                                finish = true;
                             }
                         } else {
                             if (startBTC >= count && capitalUSD >= count*courseUsdBtc) {
                                 startBTC -= count;
-                                capitalUSD += count;
+                                capitalBTC += count;
                                 capitalUSD -= count*courseUsdBtc;
                                 startUSD += count*courseUsdBtc;
+                                finish = true;
                             }
                         }
+                    }
+                    int pORm = rn.nextInt(1) + 1;
+                    if (finish) {
+                        if (pORm == 1) {
+                            courseRubUsd += courseRubUsd * randNum / 100;
+                            courseRubEur += courseUsdEur * randNum / 100;
+                            courseUsdEur += courseUsdEur * randNum / 100;
+                            courseUsdUsdt += courseUsdUsdt * randNum / 100;
+                            courseUsdBtc += courseUsdBtc * randNum / 100;
+                        } else if (pORm == 2) {
+                            courseRubUsd -= courseRubUsd * randNum / 100;
+                            courseRubEur -= courseUsdEur * randNum / 100;
+                            courseUsdEur -= courseUsdEur * randNum / 100;
+                            courseUsdUsdt -= courseUsdUsdt * randNum / 100;
+                            courseUsdBtc -= courseUsdBtc * randNum / 100;
+                        }
+                        System.out.println("Обмен произведен успешно");
+                        System.out.println("Актуальные обменные курсы:\n" +
+                            "1. " + rub_usd + " = " + courseRubUsd + "\n" +
+                            "2. " + rub_eur + " = " + courseRubEur + "\n" +
+                            "3. " + usd_eur + " = " + courseUsdEur + "\n" +
+                            "4. " + usd_usdt + " = " + courseUsdUsdt + "\n" +
+                            "5. " + usd_btc + " = " + courseUsdBtc);
+                        fl = false;
+                        trade = true;
+                    } else {
+                        cnt = "fail";
                     }
                 }
             }
