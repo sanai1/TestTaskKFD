@@ -1,39 +1,67 @@
+import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
+    // начальные средства польззователя
+    public static double capitalRUB = 1000000,
+            capitalUSD = 0,
+            capitalEUR = 0,
+            capitalUSDT = 0,
+            capitalBTC = 0;
 
-        // начальные средства польззователя
-        double capitalRUB = 1000000,
-                capitalUSD = 0,
-                capitalEUR = 0,
-                capitalUSDT = 0,
-                capitalBTC = 0;
+    // начальные средства терминала
+    public static double startRUB = 10000,
+            startUSD = 1000,
+            startEUR = 1000,
+            startUSDT = 1000,
+            startBTC = 1.5;
 
-        // начальные средства терминала
-        double startRUB = 10000,
-                startUSD = 1000,
-                startEUR = 1000,
-                startUSDT = 1000,
-                startBTC = 1.5;
+    // курс валютных пар
+    public static double courseRubUsd = 90,
+            courseRubEur = 95,
+            courseUsdEur = 1.1,
+            courseUsdUsdt = 1,
+            courseUsdBtc = 45000;
 
-        // курс валютных пар
-        double courseRubUsd = 90,
-                courseRubEur = 95,
-                courseUsdEur = 1.1,
-                courseUsdUsdt = 1,
-                courseUsdBtc = 45000;
+    // наименования валют и валютный пар
+    public static String rub_usd = "RUB/USD", rub_eur = "RUB/EUR", usd_eur = "USD/EUR", usd_usdt = "USD/USDT", usd_btc = "USD/BTC";
+    public static String rub = "RUB", usd = "USD", eur = "EUR", usdt = "USDT", btc = "BTC";
 
-        String rub_usd = "RUB/USD", rub_eur = "RUB/EUR", usd_eur = "USD/EUR", usd_usdt = "USD/USDT", usd_btc = "USD/BTC";
-        String rub = "RUB", usd = "USD", eur = "EUR", usdt = "USDT", btc = "BTC";
+    // печать счета пользователя
+    public static void printCapital() {
+        System.out.println("На вашем счету:\n" +
+                "1. " + rub + " = " + capitalRUB + "\n" +
+                "2. " + usd + " = " + capitalUSD + "\n" +
+                "3. " + eur + " = " + capitalEUR + "\n" +
+                "4. " + usdt + " = " + capitalUSDT + "\n" +
+                "5. " + btc + " = " + capitalBTC);
+    }
+
+    // печать актальный обменныъ курсов
+    public static void printCourse() {
         System.out.println("Актуальные обменные курсы:\n" +
                 "1. " + rub_usd + " = " + courseRubUsd + "\n" +
                 "2. " + rub_eur + " = " + courseRubEur + "\n" +
                 "3. " + usd_eur + " = " + courseUsdEur + "\n" +
                 "4. " + usd_usdt + " = " + courseUsdUsdt + "\n" +
                 "5. " + usd_btc + " = " + courseUsdBtc);
+    }
+
+    // печать средст терминала
+    public static void printStart() {
+        System.out.println("Средства терминала:\n" +
+                "1. " + rub + " = " + startRUB + "\n" +
+                "2. " + usd + " = " + startUSD + "\n" +
+                "3. " + eur + " = " + startEUR + "\n" +
+                "4. " + usdt + " = " + startUSDT + "\n" +
+                "5. " + btc + " = " + startBTC);
+    }
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        final DecimalFormat decimalFormat = new DecimalFormat("#.00");
+
+        printCourse();
         System.out.println("Чтобы покинуть терминал напишите '-10' или 'выйти'\nЧтобы вернуться к предыдущему шагу напишите '-1' или 'назад'");
 
         boolean fl = true;
@@ -45,12 +73,8 @@ public class Main {
                 fl = true;
             }
             if (ans.equals("-10") || ans.equals("выйти") || ans.equals("-1") || ans.equals("назад")) {
-                System.out.println("До свидания!\nСессия завершена. На вашем счету:\n" +
-                        "1. " + rub + " = " + capitalRUB + "\n" +
-                        "2. " + usd + " = " + capitalUSD + "\n" +
-                        "3. " + eur + " = " + capitalEUR + "\n" +
-                        "4. " + usdt + " = " + capitalUSDT + "\n" +
-                        "5. " + btc + " = " + capitalBTC);
+                System.out.print("До свидания!\nСессия завершена. ");
+                printCapital();
                 fl = false;
                 continue;
             }
@@ -73,13 +97,8 @@ public class Main {
             String y_n = "";
             while (fl) {
                 if (y_n.equals("-10") || y_n.equals("выйти") || !fl) {
-                    System.out.println("До свидания!\n" +
-                            "Сессия завершена. На вашем счету:\n" +
-                            "1. " + rub + " = " + capitalRUB + "\n" +
-                            "2. " + usd + " = " + capitalUSD + "\n" +
-                            "3. " + eur + " = " + capitalEUR + "\n" +
-                            "4. " + usdt + " = " + capitalUSDT + "\n" +
-                            "5. " + btc + " = " + capitalBTC);
+                    System.out.print("До свидания!\nСессия завершена. ");
+                    printCapital();
                     fl = false;
                     break;
                 } else if (y_n.equals("-1") || y_n.equals("назад")) {
@@ -104,13 +123,8 @@ public class Main {
                 String cnt = "";
                 while (fl) {
                     if (cnt.equals("-10") || cnt.equals("выйти")) {
-                        System.out.println("До свидания!\n" +
-                                "Сессия завершена. На вашем счету:\n" +
-                            "1. " + rub + " = " + capitalRUB + "\n" +
-                            "2. " + usd + " = " + capitalUSD + "\n" +
-                            "3. " + eur + " = " + capitalEUR + "\n" +
-                            "4. " + usdt + " = " + capitalUSDT + "\n" +
-                            "5. " + btc + " = " + capitalBTC);
+                        System.out.print("До свидания!\nСессия завершена. ");
+                        printCapital();
                         fl = false;
                         break;
                     } else if (cnt.equals("-1") || cnt.equals("назад")) {
@@ -125,7 +139,6 @@ public class Main {
                     else
                         System.out.println("У вас или терминала недостаточно средств для совершения сделки\n" +
                                 "Попробуйте ввести новую сумму.");
-//                        System.out.println("Некорректный ввод. Повторите попытку.");
                     cnt = in.nextLine();
 
                     Double count;
@@ -228,25 +241,20 @@ public class Main {
                     int pORm = rn.nextInt(1) + 1;
                     if (finish) {
                         if (pORm == 1) {
-                            courseRubUsd += courseRubUsd * randNum / 100;
-                            courseRubEur += courseUsdEur * randNum / 100;
-                            courseUsdEur += courseUsdEur * randNum / 100;
-                            courseUsdUsdt += courseUsdUsdt * randNum / 100;
-                            courseUsdBtc += courseUsdBtc * randNum / 100;
+                            courseRubUsd += Double.valueOf(decimalFormat.format(courseRubUsd * randNum / 100).replace(',', '.'));
+                            courseRubEur += Double.valueOf(decimalFormat.format(courseUsdEur * randNum / 100).replace(',', '.'));
+                            courseUsdEur += Double.valueOf(decimalFormat.format(courseUsdEur * randNum / 100).replace(',', '.'));
+                            courseUsdUsdt += Double.valueOf(decimalFormat.format(courseUsdUsdt * randNum / 100).replace(',', '.'));
+                            courseUsdBtc += Double.valueOf(decimalFormat.format(courseUsdBtc * randNum / 100).replace(',', '.'));
                         } else if (pORm == 2) {
-                            courseRubUsd -= courseRubUsd * randNum / 100;
-                            courseRubEur -= courseUsdEur * randNum / 100;
-                            courseUsdEur -= courseUsdEur * randNum / 100;
-                            courseUsdUsdt -= courseUsdUsdt * randNum / 100;
-                            courseUsdBtc -= courseUsdBtc * randNum / 100;
+                            courseRubUsd -= Double.valueOf(decimalFormat.format(courseRubUsd * randNum / 100).replace(',', '.'));
+                            courseRubEur -= Double.valueOf(decimalFormat.format(courseUsdEur * randNum / 100).replace(',', '.'));
+                            courseUsdEur -= Double.valueOf(decimalFormat.format(courseUsdEur * randNum / 100).replace(',', '.'));
+                            courseUsdUsdt -= Double.valueOf(decimalFormat.format(courseUsdUsdt * randNum / 100).replace(',', '.'));
+                            courseUsdBtc -= Double.valueOf(decimalFormat.format(courseUsdBtc * randNum / 100).replace(',', '.'));
                         }
                         System.out.println("Обмен произведен успешно");
-                        System.out.println("Актуальные обменные курсы:\n" +
-                            "1. " + rub_usd + " = " + courseRubUsd + "\n" +
-                            "2. " + rub_eur + " = " + courseRubEur + "\n" +
-                            "3. " + usd_eur + " = " + courseUsdEur + "\n" +
-                            "4. " + usd_usdt + " = " + courseUsdUsdt + "\n" +
-                            "5. " + usd_btc + " = " + courseUsdBtc);
+                        printCourse();
                         fl = false;
                         trade = true;
                     } else {
