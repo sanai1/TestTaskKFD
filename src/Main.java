@@ -53,11 +53,11 @@ public class Main {
             randomNum = ":";
 
         System.out.println("Актуальные обменные курсы" + randomNum + "\n" +
-                "1. " + rub_usd + " = " + String.format("%.3f", courseRubUsd) + "\n" +
-                "2. " + rub_eur + " = " + String.format("%.3f", courseRubEur) + "\n" +
+                "1. " + rub_usd + " = " + String.format("%.2f", courseRubUsd) + "\n" +
+                "2. " + rub_eur + " = " + String.format("%.2f", courseRubEur) + "\n" +
                 "3. " + usd_eur + " = " + String.format("%.3f", courseUsdEur) + "\n" +
                 "4. " + usd_usdt + " = " + String.format("%.3f", courseUsdUsdt) + "\n" +
-                "5. " + usd_btc + " = " + String.format("%.3f", courseUsdBtc));
+                "5. " + usd_btc + " = " + String.format("%.1f", courseUsdBtc));
     }
 
     // печать средст терминала
@@ -71,7 +71,6 @@ public class Main {
     }
 
     // меню
-
     public static void menu(int n) {
         System.out.println("""
                 МЕНЮ
@@ -155,6 +154,28 @@ public class Main {
                 "Обменять " + a + " на " + b + ", введите '2'");
     }
 
+    // проверка на максимально возможный обмен валюты
+    public static String checkCourse(int num_course, int exchange) {
+        return switch (num_course) {
+            case 1 -> {
+                if (exchange == 1) yield "a" + String.format("%.2f", Math.min(capitalUSD * courseRubUsd, startRUB));
+                else yield "b" + String.format("%.2f", Math.min(capitalRUB / courseRubUsd, startUSD));
+            } case 2 -> {
+                if (exchange == 1) yield "a" + String.format("%.2f", Math.min(capitalEUR * courseRubEur, startRUB));
+                else yield "b" + String.format("%.2f", Math.min(capitalRUB / courseRubEur, startEUR));
+            } case 3 -> {
+                if (exchange == 1) yield "a" + String.format("%.2f", Math.min(capitalEUR * courseUsdEur, startUSD));
+                else yield "b" + String.format("%.2f", Math.min(capitalUSD / courseUsdEur, startEUR));
+            } case 4 -> {
+                if (exchange == 1) yield "a" + String.format("%.2f", Math.min(capitalUSDT * courseUsdUsdt, startUSD));
+                else yield "b" + String.format("%.2f", Math.min(capitalUSD / courseUsdUsdt, startUSDT));
+            } case 5 -> {
+                if (exchange == 1) yield "a" + String.format("%.3f", Math.min(capitalBTC * courseUsdBtc, startUSD));
+                else yield "b" + String.format("%.3f", Math.min(capitalUSD / courseUsdBtc, startBTC));
+            } default -> "";
+        };
+    }
+
     // сообщение объем обмена
     public static void printExchange(int num_course, int exchange) {
         String a = "";
@@ -181,7 +202,7 @@ public class Main {
             }
             default -> a;
         };
-        System.out.println("Сколько " + a + " хотите преобрести?");
+        System.out.println("Введите сумму не более " + checkCourse(num_course, exchange).substring(1) + " " + a);
     }
 
     // класс - булевая пара
