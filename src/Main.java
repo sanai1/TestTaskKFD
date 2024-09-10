@@ -1,6 +1,6 @@
-import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
     // начальные средства польззователя
@@ -34,46 +34,52 @@ public class Main {
         if (n == 0)
             System.out.print("До свидания! Сессия завершена. ");
         System.out.println("На вашем счету:\n" +
-                "1. " + rub + " = " + capitalRUB + "\n" +
-                "2. " + usd + " = " + capitalUSD + "\n" +
-                "3. " + eur + " = " + capitalEUR + "\n" +
-                "4. " + usdt + " = " + capitalUSDT + "\n" +
-                "5. " + btc + " = " + capitalBTC);
+                "1. " + rub + " = " + String.format("%.2f", capitalRUB) + "\n" +
+                "2. " + usd + " = " + String.format("%.2f", capitalUSD) + "\n" +
+                "3. " + eur + " = " + String.format("%.2f", capitalEUR) + "\n" +
+                "4. " + usdt + " = " + String.format("%.2f", capitalUSDT) + "\n" +
+                "5. " + btc + " = " + String.format("%.2f", capitalBTC));
     }
 
     // печать актальный обменныъ курсов
-    public static void printCourse(int n) {
+    public static void printCourse(int n, String randomNum) {
         if (n == 0) {
             printStart();
             System.out.println("--------------------");
         }
-        System.out.println("Актуальные обменные курсы:\n" +
-                "1. " + rub_usd + " = " + courseRubUsd + "\n" +
-                "2. " + rub_eur + " = " + courseRubEur + "\n" +
-                "3. " + usd_eur + " = " + courseUsdEur + "\n" +
-                "4. " + usd_usdt + " = " + courseUsdUsdt + "\n" +
-                "5. " + usd_btc + " = " + courseUsdBtc);
+        if (!randomNum.isEmpty())
+            randomNum = " (" + randomNum + "%):";
+        else
+            randomNum = ":";
+
+        System.out.println("Актуальные обменные курсы" + randomNum + "\n" +
+                "1. " + rub_usd + " = " + String.format("%.3f", courseRubUsd) + "\n" +
+                "2. " + rub_eur + " = " + String.format("%.3f", courseRubEur) + "\n" +
+                "3. " + usd_eur + " = " + String.format("%.3f", courseUsdEur) + "\n" +
+                "4. " + usd_usdt + " = " + String.format("%.3f", courseUsdUsdt) + "\n" +
+                "5. " + usd_btc + " = " + String.format("%.3f", courseUsdBtc));
     }
 
     // печать средст терминала
     public static void printStart() {
         System.out.println("Средства терминала:\n" +
-                "1. " + rub + " = " + startRUB + "\n" +
-                "2. " + usd + " = " + startUSD + "\n" +
-                "3. " + eur + " = " + startEUR + "\n" +
-                "4. " + usdt + " = " + startUSDT + "\n" +
-                "5. " + btc + " = " + startBTC);
+                "1. " + rub + " = " + String.format("%.2f", startRUB) + "\n" +
+                "2. " + usd + " = " + String.format("%.2f", startUSD) + "\n" +
+                "3. " + eur + " = " + String.format("%.2f", startEUR) + "\n" +
+                "4. " + usdt + " = " + String.format("%.2f", startUSDT) + "\n" +
+                "5. " + btc + " = " + String.format("%.2f", startBTC));
     }
 
     // меню
 
     public static void menu(int n) {
-        System.out.println("МЕНЮ\n" +
-                "1. Для завершения сессии напишите 'выход'\n" +
-                "2. Для возвращения к предыдущему шагу напишите 'назад'\n" +
-                "3. Для просмотра баланса напишите 'баланс'\n" +
-                "4. Для просмотра актального курса напишите 'курс'\n" +
-                "5. Для просмотра баланса терминала напишите 'терминал'");
+        System.out.println("""
+                МЕНЮ
+                1. Для завершения сессии напишите 'выход'
+                2. Для возвращения к предыдущему шагу напишите 'назад'
+                3. Для просмотра баланса напишите 'баланс'
+                4. Для просмотра актального курса напишите 'курс'
+                5. Для просмотра баланса терминала напишите 'терминал'""");
         if (n == 0)
             System.out.println("--------------------");
     }
@@ -85,38 +91,38 @@ public class Main {
                 printCapital(1);
                 yield "end";
             } case "курс" -> {
-                printCourse(1);
+                printCourse(1, "");
                 yield "end";
             } case "терминал" -> {
                 printStart();
                 yield "end";
-            } default -> {
-                yield str;
-            }
+            } default -> str;
         };
     }
 
     // изменение курса валютных пар
-    public static void updateCourse() {
-        final DecimalFormat decimalFormat = new DecimalFormat("#.00");
+    public static String updateCourse() {
         Random rn = new Random();
 
         int minimum = 0, maximum = 50;
-        double randNum = (double) (rn.nextInt(maximum - minimum + 1) + minimum)/10;
-        int pORm = rn.nextInt(1) + 1;
+        double randNum = (double) (rn.nextInt(maximum - minimum + 1) + minimum)/1000;
+        int pORm = ThreadLocalRandom.current().nextInt(1, 3);
         if (pORm == 1) {
-            courseRubUsd += Double.valueOf(decimalFormat.format(courseRubUsd * randNum / 100).replace(',', '.'));
-            courseRubEur += Double.valueOf(decimalFormat.format(courseUsdEur * randNum / 100).replace(',', '.'));
-            courseUsdEur += Double.valueOf(decimalFormat.format(courseUsdEur * randNum / 100).replace(',', '.'));
-            courseUsdUsdt += Double.valueOf(decimalFormat.format(courseUsdUsdt * randNum / 100).replace(',', '.'));
-            courseUsdBtc += Double.valueOf(decimalFormat.format(courseUsdBtc * randNum / 100).replace(',', '.'));
+            courseRubUsd += courseRubUsd*randNum;
+            courseRubEur += courseRubEur*randNum;
+            courseUsdEur += courseUsdEur*randNum;
+            courseUsdUsdt += courseUsdUsdt*randNum;
+            courseUsdBtc += courseUsdBtc*randNum;
+            return "+" + String.format("%.2f", randNum*100);
         } else if (pORm == 2) {
-            courseRubUsd -= Double.valueOf(decimalFormat.format(courseRubUsd * randNum / 100).replace(',', '.'));
-            courseRubEur -= Double.valueOf(decimalFormat.format(courseUsdEur * randNum / 100).replace(',', '.'));
-            courseUsdEur -= Double.valueOf(decimalFormat.format(courseUsdEur * randNum / 100).replace(',', '.'));
-            courseUsdUsdt -= Double.valueOf(decimalFormat.format(courseUsdUsdt * randNum / 100).replace(',', '.'));
-            courseUsdBtc -= Double.valueOf(decimalFormat.format(courseUsdBtc * randNum / 100).replace(',', '.'));
+            courseRubUsd -= courseRubUsd*randNum;
+            courseRubEur -= courseRubEur*randNum;
+            courseUsdEur -= courseUsdEur*randNum;
+            courseUsdUsdt -= courseUsdUsdt*randNum;
+            courseUsdBtc -= courseUsdBtc*randNum;
+            return "-" + String.format("%.2f", randNum*100);
         }
+        return "";
     }
 
     // сообщение покупка/продажа в зависимости от валютной пары
@@ -213,7 +219,7 @@ public class Main {
                             startUSD += count;
                             startRUB -= count * courseRubUsd;
                             capitalRUB += count * courseRubUsd;
-                            System.out.println("Продано " + count + " " + usd + " за " + count*courseRubUsd + " " + rub);
+                            System.out.println("Продано " + count + " " + usd + " за " + String.format("%.2f", count*courseRubUsd) + " " + rub);
                         } else
                             pair.getSecond(false);
                     else
@@ -226,7 +232,7 @@ public class Main {
                             startEUR += count;
                             startRUB -= count*courseRubEur;
                             capitalRUB += count*courseRubEur;
-                            System.out.println("Продано " + count + " " + eur + " за " + count*courseRubEur + " " + rub);
+                            System.out.println("Продано " + count + " " + eur + " за " + String.format("%.2f", count*courseRubEur) + " " + rub);
                         } else
                             pair.getSecond(false);
                     else
@@ -239,7 +245,7 @@ public class Main {
                             startEUR += count;
                             startUSD -= count*courseUsdEur;
                             capitalUSD += count*courseUsdEur;
-                            System.out.println("Продано " + count + " " + eur + " за " + count*courseUsdEur + " " + usd);
+                            System.out.println("Продано " + count + " " + eur + " за " + String.format("%.2f", count*courseUsdEur) + " " + usd);
                         } else
                             pair.getSecond(false);
                     else
@@ -252,7 +258,7 @@ public class Main {
                             startUSDT += count;
                             startUSD -= count*courseUsdUsdt;
                             capitalUSD += count*courseUsdUsdt;
-                            System.out.println("Продано " + count + " " + usdt + " за " + count*courseUsdUsdt + " " + usd);
+                            System.out.println("Продано " + count + " " + usdt + " за " + String.format("%.2f", count*courseUsdUsdt) + " " + usd);
                         } else
                             pair.getSecond(false);
                     else
@@ -265,7 +271,7 @@ public class Main {
                             startBTC += count;
                             startUSD -= count*courseUsdBtc;
                             capitalUSD += count*courseUsdBtc;
-                            System.out.println("Продано " + count + " " + btc + " за " + count*courseUsdBtc + " " + usd);
+                            System.out.println("Продано " + count + " " + btc + " за " + String.format("%.2f", count*courseUsdBtc) + " " + usd);
                         } else
                             pair.getSecond(false);
                     else
@@ -281,7 +287,7 @@ public class Main {
                             capitalUSD += count;
                             capitalRUB -= count*courseRubUsd;
                             startRUB += count*courseRubUsd;
-                            System.out.println("Куплено " + count + " " + usd + " за " + count*courseRubUsd + " " + rub);
+                            System.out.println("Куплено " + count + " " + usd + " за " + String.format("%.2f", count*courseRubUsd) + " " + rub);
                         } else
                             pair.getFirst(false);
                     else
@@ -294,7 +300,7 @@ public class Main {
                             capitalEUR += count;
                             capitalRUB -= count*courseRubEur;
                             startRUB += count*courseRubEur;
-                            System.out.println("Куплено " + count + " " + eur + " за " + count*courseRubEur + " " + rub);
+                            System.out.println("Куплено " + count + " " + eur + " за " + String.format("%.2f", count*courseRubEur) + " " + rub);
                         } else
                             pair.getFirst(false);
                     else
@@ -307,7 +313,7 @@ public class Main {
                             capitalEUR += count;
                             capitalUSD -= count*courseUsdEur;
                             startUSD += count*courseUsdEur;
-                            System.out.println("Куплено " + count + " " + eur + " за " + count*courseUsdEur + " " + usd);
+                            System.out.println("Куплено " + count + " " + eur + " за " + String.format("%.2f", count*courseUsdEur) + " " + usd);
                         } else
                             pair.getFirst(false);
                     else
@@ -320,7 +326,7 @@ public class Main {
                             capitalUSDT += count;
                             capitalUSD -= count*courseUsdUsdt;
                             startUSD += count*courseUsdUsdt;
-                            System.out.println("Куплено " + count + " " + usdt + " за " + count*courseUsdUsdt + " " + usd);
+                            System.out.println("Куплено " + count + " " + usdt + " за " + String.format("%.2f", count*courseUsdUsdt) + " " + usd);
                         } else
                             pair.getFirst(false);
                     else
@@ -333,7 +339,7 @@ public class Main {
                             capitalBTC += count;
                             capitalUSD -= count*courseUsdBtc;
                             startUSD += count*courseUsdBtc;
-                            System.out.println("Куплено " + count + " " + btc + " за " + count*courseUsdBtc + " " + usd);
+                            System.out.println("Куплено " + count + " " + btc + " за " + String.format("%.2f", count*courseUsdBtc) + " " + usd);
                         } else
                             pair.getFirst(false);
                     else
@@ -348,7 +354,7 @@ public class Main {
 
         System.out.println("Для просмотра МЕНЮ напишите 'меню'");
         menu(0);
-        printCourse(0);
+        printCourse(0, "");
 
         String ans = "";
         boolean trade = false;
@@ -464,8 +470,8 @@ public class Main {
 
                     Pair pair = exchange(exchange, num_course, count);
                     if (pair.first() && pair.second()) {
-                        updateCourse();
-                        printCourse(1);
+                        String randomNum = updateCourse();
+                        printCourse(1, randomNum);
                         fl = false;
                         trade = true;
                     } else {
