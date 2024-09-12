@@ -38,21 +38,17 @@ public class Main {
                 "2. " + usd + " = " + String.format("%.2f", capitalUSD) + "\n" +
                 "3. " + eur + " = " + String.format("%.2f", capitalEUR) + "\n" +
                 "4. " + usdt + " = " + String.format("%.2f", capitalUSDT) + "\n" +
-                "5. " + btc + " = " + String.format("%.2f", capitalBTC));
+                "5. " + btc + " = " + String.format("%.3f", capitalBTC));
     }
 
     // печать актальный обменныъ курсов
-    public static void printCourse(int n, String randomNum) {
+    public static void printCourse(int n) {
         if (n == 0) {
             printStart();
             System.out.println("--------------------");
         }
-        if (!randomNum.isEmpty())
-            randomNum = " (" + randomNum + "%):";
-        else
-            randomNum = ":";
 
-        System.out.println("Актуальные обменные курсы" + randomNum + "\n" +
+        System.out.println("Актуальные обменные курсы:\n" +
                 "1. " + rub_usd + " = " + String.format("%.2f", courseRubUsd) + "\n" +
                 "2. " + rub_eur + " = " + String.format("%.2f", courseRubEur) + "\n" +
                 "3. " + usd_eur + " = " + String.format("%.3f", courseUsdEur) + "\n" +
@@ -90,7 +86,7 @@ public class Main {
                 printCapital(1);
                 yield "end";
             } case "курс" -> {
-                printCourse(1, "");
+                printCourse(1);
                 yield "end";
             } case "терминал" -> {
                 printStart();
@@ -99,29 +95,24 @@ public class Main {
         };
     }
 
-    // изменение курса валютных пар
-    public static String updateCourse() {
-        Random rn = new Random();
-
+    // генерация изменения курса для каждой валютной пары
+    public static double getRandomNum() {
         int minimum = 0, maximum = 50;
-        double randNum = (double) (rn.nextInt(maximum - minimum + 1) + minimum)/1000;
+        Random random = new Random();
         int pORm = ThreadLocalRandom.current().nextInt(1, 3);
-        if (pORm == 1) {
-            courseRubUsd += courseRubUsd*randNum;
-            courseRubEur += courseRubEur*randNum;
-            courseUsdEur += courseUsdEur*randNum;
-            courseUsdUsdt += courseUsdUsdt*randNum;
-            courseUsdBtc += courseUsdBtc*randNum;
-            return "+" + String.format("%.2f", randNum*100);
-        } else if (pORm == 2) {
-            courseRubUsd -= courseRubUsd*randNum;
-            courseRubEur -= courseRubEur*randNum;
-            courseUsdEur -= courseUsdEur*randNum;
-            courseUsdUsdt -= courseUsdUsdt*randNum;
-            courseUsdBtc -= courseUsdBtc*randNum;
-            return "-" + String.format("%.2f", randNum*100);
-        }
-        return "";
+        if (pORm == 1)
+            return (double) (random.nextInt(maximum - minimum + 1) + minimum)/1000;
+        else
+            return (double) -(random.nextInt(maximum - minimum + 1) + minimum)/1000;
+    }
+
+    // изменение курса валютных пар
+    public static void updateCourse() {
+            courseRubUsd += courseRubUsd*getRandomNum();
+            courseRubEur += courseRubEur*getRandomNum();
+            courseUsdEur += courseUsdEur*getRandomNum();
+            courseUsdUsdt += courseUsdUsdt*getRandomNum();
+            courseUsdBtc += courseUsdBtc*getRandomNum();
     }
 
     // сообщение покупка/продажа в зависимости от валютной пары
@@ -177,7 +168,7 @@ public class Main {
     }
 
     // сообщение объем обмена
-    public static void printExchange(int num_course, int exchange) {
+    public static int printExchange(int num_course, int exchange) {
         String a = "";
         a = switch (num_course) {
             case 1 -> {
@@ -202,7 +193,14 @@ public class Main {
             }
             default -> a;
         };
-        System.out.println("Введите сумму не более " + checkCourse(num_course, exchange).substring(1) + " " + a);
+        String checkCourse = checkCourse(num_course, exchange);
+        if (checkCourse.substring(1).equals("0,00"))
+            return -1;
+        if (num_course == 5 && exchange == 2)
+            System.out.println("Введите сумму от 0,001 " + a + " до " + checkCourse(num_course, exchange).substring(1) + " " + a);
+        else
+            System.out.println("Введите сумму от 0,01 " + a + " до " + checkCourse(num_course, exchange).substring(1) + " " + a);
+        return 1;
     }
 
     // класс - булевая пара
@@ -234,65 +232,65 @@ public class Main {
         if (exchange == 1) {
             switch (num_course) {
                 case 1:
-                    if (capitalUSD >= count)
-                        if (startRUB >= count*courseRubUsd) {
-                            capitalUSD -= count;
-                            startUSD += count;
-                            startRUB -= count * courseRubUsd;
-                            capitalRUB += count * courseRubUsd;
-                            System.out.println("Продано " + count + " " + usd + " за " + String.format("%.2f", count*courseRubUsd) + " " + rub);
+                    if (capitalUSD >= count / courseRubUsd)
+                        if (startRUB >= count) {
+                            capitalUSD -= count / courseRubUsd;
+                            startUSD += count / courseRubUsd;
+                            startRUB -= count;
+                            capitalRUB += count;
+                            System.out.println("Продано " + String.format("%.2f", count / courseRubUsd) + " " + usd + " за " + count + " " + rub);
                         } else
                             pair.getSecond(false);
                     else
                         pair.getFirst(false);
                     break;
                 case 2:
-                    if (capitalEUR >= count)
-                        if (startRUB >= count*courseRubEur) {
-                            capitalEUR -= count;
-                            startEUR += count;
-                            startRUB -= count*courseRubEur;
-                            capitalRUB += count*courseRubEur;
-                            System.out.println("Продано " + count + " " + eur + " за " + String.format("%.2f", count*courseRubEur) + " " + rub);
+                    if (capitalEUR >= count / courseRubEur)
+                        if (startRUB >= count) {
+                            capitalEUR -= count / courseRubEur;
+                            startEUR += count / courseRubEur;
+                            startRUB -= count;
+                            capitalRUB += count;
+                            System.out.println("Продано " + String.format("%.2f", count / courseRubEur) + " " + eur + " за " + count + " " + rub);
                         } else
                             pair.getSecond(false);
                     else
                         pair.getFirst(false);
                     break;
                 case 3:
-                    if (capitalEUR >= count)
-                        if (startUSD >= count*courseUsdEur) {
-                            capitalEUR -= count;
-                            startEUR += count;
-                            startUSD -= count*courseUsdEur;
-                            capitalUSD += count*courseUsdEur;
-                            System.out.println("Продано " + count + " " + eur + " за " + String.format("%.2f", count*courseUsdEur) + " " + usd);
+                    if (capitalEUR >= count / courseUsdEur)
+                        if (startUSD >= count) {
+                            capitalEUR -= count / courseUsdEur;
+                            startEUR += count / courseUsdEur;
+                            startUSD -= count;
+                            capitalUSD += count;
+                            System.out.println("Продано " + String.format("%.2f", count / courseUsdEur) + " " + eur + " за " + count + " " + usd);
                         } else
                             pair.getSecond(false);
                     else
                         pair.getFirst(false);
                     break;
                 case 4:
-                    if (capitalUSDT >= count)
-                        if (startUSD >= count*courseUsdUsdt) {
-                            capitalUSDT -= count;
-                            startUSDT += count;
-                            startUSD -= count*courseUsdUsdt;
-                            capitalUSD += count*courseUsdUsdt;
-                            System.out.println("Продано " + count + " " + usdt + " за " + String.format("%.2f", count*courseUsdUsdt) + " " + usd);
+                    if (capitalUSDT >= count / courseUsdUsdt)
+                        if (startUSD >= count) {
+                            capitalUSDT -= count / courseUsdUsdt;
+                            startUSDT += count / courseUsdUsdt;
+                            startUSD -= count;
+                            capitalUSD += count;
+                            System.out.println("Продано " + String.format("%.2f", count / courseUsdUsdt) + " " + usdt + " за " + count + " " + usd);
                         } else
                             pair.getSecond(false);
                     else
                         pair.getFirst(false);
                     break;
                 case 5:
-                    if (capitalBTC >= count)
-                        if (startUSD >= count*courseUsdBtc) {
-                            capitalBTC -= count;
-                            startBTC += count;
-                            startUSD -= count*courseUsdBtc;
-                            capitalUSD += count*courseUsdBtc;
-                            System.out.println("Продано " + count + " " + btc + " за " + String.format("%.2f", count*courseUsdBtc) + " " + usd);
+                    if (capitalBTC >= count / courseUsdBtc)
+                        if (startUSD >= count) {
+                            capitalBTC -= count / courseUsdBtc;
+                            startBTC += count / courseUsdBtc;
+                            startUSD -= count;
+                            capitalUSD += count;
+                            System.out.println("Продано " + String.format("%.3f", count / courseUsdBtc) + " " + btc + " за " + count + " " + usd);
                         } else
                             pair.getSecond(false);
                     else
@@ -375,7 +373,7 @@ public class Main {
 
         System.out.println("Для просмотра МЕНЮ напишите 'меню'");
         menu(0);
-        printCourse(0, "");
+        printCourse(0);
 
         String ans = "";
         boolean trade = false;
@@ -440,6 +438,7 @@ public class Main {
                 y_n = "";
 
                 String cnt = "";
+                boolean nowExchange = true;
                 label2:
                 while (fl) {
                     switch (cnt) {
@@ -453,15 +452,20 @@ public class Main {
                             menu(1);
                         case "":
                         case "end":
-                            printExchange(num_course, exchange);
+                            if (printExchange(num_course, exchange) == -1)
+                                nowExchange = false;
+
                             break;
                         default:
                             switch (cnt) {
                                 case "string":
-                                    System.out.println("Некорректный ввод. Необходимо ввести число.");
+                                    System.out.println("Некорректный ввод. Необходимо ввести число");
                                     break;
                                 case "negative":
-                                    System.out.println("Сумма должна быть положительным числом.");
+                                    System.out.println("Сумма должна быть положительным числом");
+                                    break;
+                                case "small":
+                                    System.out.println("Введена сумма менее допустимой");
                                     break;
                                 case "person":
                                     System.out.println("У вас недостаточно средств для совершения обмена");
@@ -469,10 +473,16 @@ public class Main {
                                 case "terminal":
                                     System.out.println("Терминалу не хватает средств для совершения обмена");
                                     break;
+                                case "fail":
+                                    System.out.println("Невозможно провести обмен");
+                                    break label2;
                             }
                             System.out.println("Введите новую сумму:");
                     }
-                    cnt = checkInput(in.nextLine().toLowerCase());
+                    if (nowExchange)
+                        cnt = checkInput(in.nextLine().toLowerCase());
+                    else
+                        cnt = "fail";
 
                     double count;
                     try {
@@ -480,9 +490,19 @@ public class Main {
                         if (count <= 0) {
                             cnt = "negative";
                             continue;
+                        } else if (count < 0.01) {
+                            if (num_course == 5 && exchange == 2) {
+                                if (count < 0.001) {
+                                    cnt = "small";
+                                    continue;
+                                }
+                            } else {
+                                cnt = "small";
+                                continue;
+                            }
                         }
                     } catch (Exception e) {
-                        if (cnt.equals("end") || cnt.equals("меню") || cnt.equals("назад") || cnt.equals("выйти"))
+                        if (cnt.equals("end") || cnt.equals("меню") || cnt.equals("назад") || cnt.equals("выйти") || cnt.equals("fail"))
                             continue;
                         cnt = "string";
                         continue;
@@ -491,8 +511,8 @@ public class Main {
 
                     Pair pair = exchange(exchange, num_course, count);
                     if (pair.first() && pair.second()) {
-                        String randomNum = updateCourse();
-                        printCourse(1, randomNum);
+                        updateCourse();
+                        printCourse(1);
                         fl = false;
                         trade = true;
                     } else {
